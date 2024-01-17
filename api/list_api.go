@@ -10,9 +10,9 @@ import (
 )
 
 type ItemResp struct {
+	Name  string         `json:"name"`
 	Desc  string         `json:"desc"`
 	Image string         `json:"image"`
-	Name  string         `json:"name"`
 	Price int            `json:"price"`
 	Sizes []ItemSizeResp `json:"sizes"`
 }
@@ -101,7 +101,7 @@ func getCategoryByID(c *gin.Context) {
 		}
 	}
 
-	c.AbortWithError(http.StatusNotFound, nil)
+	c.AbortWithStatus(http.StatusNotFound)
 }
 
 func getCategories(c *gin.Context) {

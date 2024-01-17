@@ -11,5 +11,9 @@ func Run(addr ...string) error {
 	r.GET("/categories/:id", getCategoryByID)
 	r.GET("/items", searchItems)
 
+	r.GET("/order", getTodayOrder)
+
+	r.POST("/order", addToOrder)
+
 	return r.Run(addr...)
 }
