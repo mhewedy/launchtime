@@ -22,27 +22,6 @@ type ItemSizeResp struct {
 	Price int    `json:"price"`
 }
 
-func normalize(input string) string {
-	// replace similar chars
-	input = strings.ReplaceAll(input, "أ", "ا")
-	input = strings.ReplaceAll(input, "ي", "ى")
-	return input
-}
-
-func Run(addr ...string) {
-	r := gin.Default()
-
-	r.GET("/original-response", getOriginalResponse)
-
-	r.GET("/categories", getCategories)
-
-	r.GET("/categories/:id", getCategoryByID)
-
-	r.GET("/items", searchItems)
-
-	r.Run(addr...)
-}
-
 func searchItems(c *gin.Context) {
 	name := c.Query("name")
 	var l []ItemResp
@@ -147,4 +126,11 @@ func getCategories(c *gin.Context) {
 
 func getOriginalResponse(c *gin.Context) {
 	c.JSON(http.StatusOK, datasource.GetCategories())
+}
+
+func normalize(input string) string {
+	// replace similar chars
+	input = strings.ReplaceAll(input, "أ", "ا")
+	input = strings.ReplaceAll(input, "ي", "ى")
+	return input
 }

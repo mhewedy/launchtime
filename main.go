@@ -6,5 +6,8 @@ import (
 
 func main() {
 
-	api.Run(":5000")
+	err := api.Run(":5000")
+	if err != nil {
+		panic(err)
+	}
 }
