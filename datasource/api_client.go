@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Categories struct {
@@ -89,18 +90,29 @@ type Categories struct {
 	} `json:"data"`
 }
 
-var categories Categories
+var categories *Categories
 
 func init() {
 	callApi()
+	periodicallyCleanCache()
+}
+
+func periodicallyCleanCache() {
+	go func() {
+		for {
+			categories = nil
+			time.Sleep(48 * time.Hour)
+		}
+	}()
 }
 
 func callApi() {
+	fmt.Println("calling Api")
+
 	url := "https://shawarma-house.my.taker.io/api/v4/categories/products?page=1&per_page=1000"
-	method := "GET"
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, nil)
+	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
 		panic(err)
@@ -119,9 +131,19 @@ func callApi() {
 		panic(err)
 	}
 
-	fmt.Println("data loaded successfully")
+	count := 0
+	for _, cat := range categories.Data {
+		for _ = range cat.Items.Data {
+			count++
+		}
+	}
+
+	fmt.Printf("%d item loaded successfully\n", count)
 }
 
-func GetCategories() Categories {
+func GetCategories() *Categories {
+	if categories == nil {
+		callApi()
+	}
 	return categories
 }

@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-var categories = datasource.GetCategories()
-
 type ItemResp struct {
 	Desc  string         `json:"desc"`
 	Image string         `json:"image"`
@@ -31,7 +29,7 @@ func normalize(input string) string {
 	return input
 }
 
-func Run() {
+func Run(addr ...string) {
 	r := gin.Default()
 
 	r.GET("/original-response", getOriginalResponse)
@@ -42,14 +40,14 @@ func Run() {
 
 	r.GET("/items", searchItems)
 
-	r.Run(":5000")
+	r.Run(addr...)
 }
 
 func searchItems(c *gin.Context) {
 	name := c.Query("name")
 	var l []ItemResp
 
-	for _, cat := range categories.Data {
+	for _, cat := range datasource.GetCategories().Data {
 		for _, item := range cat.Items.Data {
 			if strings.Contains(normalize(item.Name.Ar), normalize(name)) ||
 				strings.Contains(normalize(item.Description.Ar), normalize(name)) {
@@ -88,7 +86,7 @@ func searchItems(c *gin.Context) {
 func getCategoryByID(c *gin.Context) {
 	catID, _ := strconv.Atoi(c.Param("id"))
 
-	for _, cat := range categories.Data {
+	for _, cat := range datasource.GetCategories().Data {
 		if cat.ID == catID {
 
 			l := make([]ItemResp, len(cat.Items.Data))
@@ -129,9 +127,9 @@ func getCategoryByID(c *gin.Context) {
 
 func getCategories(c *gin.Context) {
 
-	l := make([]map[string]any, len(categories.Data))
+	l := make([]map[string]any, len(datasource.GetCategories().Data))
 
-	for i, cat := range categories.Data {
+	for i, cat := range datasource.GetCategories().Data {
 
 		m := make(map[string]any)
 		m["id"] = cat.ID
@@ -148,5 +146,5 @@ func getCategories(c *gin.Context) {
 }
 
 func getOriginalResponse(c *gin.Context) {
-	c.JSON(http.StatusOK, categories)
+	c.JSON(http.StatusOK, datasource.GetCategories())
 }
